@@ -1,0 +1,10 @@
+#allposts-view {
+    margin: 5px;
+}
+
+.post-view {
+    padding: 20px;
+    margin: 5px;
+    border-radius: 3px;
+    border: 1px solid #D3D3D3;
+}
