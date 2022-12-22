@@ -8,3 +8,13 @@
     border-radius: 3px;
     border: 1px solid #D3D3D3;
 }
+
+.post-user {
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.post-time {
+    color: #808080;
+}

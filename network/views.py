@@ -1,10 +1,14 @@
+import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import User
+from .models import User, Post
 
 
 def index(request):
@@ -65,7 +69,39 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def state(request, state):
+def posts(request):
     
-    if state ==  "All Post":
-        pass
+   post_list = Post.objects.all()
+   post_list = post_list.order_by("-timestamp").all()
+   # Show 10 posts per page
+   paginator = Paginator(post_list, 10)
+
+   page_number = int(request.GET.get("page") or 0)
+   page_obj = paginator.get_page(page_number)
+
+   return JsonResponse([post.serialize() for post in page_obj.object_list], safe=False)
+    
+
+@csrf_exempt
+@login_required
+def addpost(request):
+    
+    # New post must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Get contents of post
+    data = json.loads(request.body)
+    body = data.get("body", "")
+
+    post = Post(
+        user=request.user,
+        body=body
+    )
+    post.save()
+
+    return JsonResponse({"message": "Post added successfully."}, status=201)
+    
+    
+
+    
