@@ -1,4 +1,3 @@
-
 from django.urls import path
 
 from . import views
@@ -8,8 +7,9 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
-    
+    path("profile/<str:username>", views.profile, name="profile"),
     # API routes
-    path("network", views.addpost, name="addpost"),
-    path("posts", views.posts, name="posts")
+    path("post", views.addpost, name="addpost"),
+    path("posts/<str:username>/", views.posts, name="posts"),
+    path("profile", views.profile, name="profile"),
 ]

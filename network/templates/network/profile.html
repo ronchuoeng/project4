@@ -1,0 +1,21 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div id="allposts-view">
+    <h1>Profile: {{ user.username }}</h1>
+
+
+    <div class="posts-view">
+    </div>
+
+</div>
+
+    <div class="pagination">
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
