@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    user = document.querySelector("#user");
+    user.addEventListener("click", () => load(`${user.innerHTML}`));
+
     // Post
     if (document.querySelector("#post-form")) {
         document.querySelector("#post-form").addEventListener("submit", post);
@@ -13,6 +16,7 @@ let counter = 1;
 function load(user) {
     // Set start and end post numbers, and update counter
     const page = counter;
+    document.querySelector(".posts-view").innerHTML = "";
     // Get new posts and add posts
     fetch(`/posts/${user}/?page=${page}`)
         .then((response) => response.json())
@@ -59,7 +63,7 @@ function load(user) {
                             contents.likelist + " " + "likes";
                     }
                     postLikeTag.innerHTML =
-                        "<img src='static/network/LikeThumb.png' style='width:20%;height:50%;'> Like";
+                        "<img src='/static/network/LikeThumb.png' style='width:20%;height:50%;'> Like";
                     likeTag.appendChild(postLikeTag);
                     userTag.appendChild(postUser);
                     post.appendChild(userTag);
