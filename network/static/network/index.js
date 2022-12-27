@@ -1,13 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-    user = document.querySelector("#user");
-    user.addEventListener("click", () => load(`${user.innerHTML}`));
-
     // Post
     if (document.querySelector("#post-form")) {
         document.querySelector("#post-form").addEventListener("submit", post);
     }
-    // Default route
-    load("all");
+    //  Load individual user's posts on profile page
+    if (document.querySelector("#user")) {
+        load(`${document.querySelector("#user").innerHTML}`);
+    } else {
+        // Default Route
+        load("all");
+    }
 });
 
 // Start with first page
