@@ -3,8 +3,22 @@
 
 {% block body %}
 <div id="allposts-view">
-    <h1>Profile: <span id="user">{{ user.username }}</span></h1>
-
+    <h1>Profile: <span id="user">{{ user.username }}</span>
+        {% if request.user.username != user.username %}
+            {% if user1 in tableF %}
+                <button class="btn btn-follow" style="background-color:#D3D3D3;color:black;" value="{{ user.username }}">Following</button>
+            {% else %}
+                <button class="btn btn-follow" value="{{ user.username }}">
+                    Follow</button>
+            {% endif %}
+        {% endif %}
+    </h1>
+    <div id="profile-div">
+        <div id="follower-div">
+            {{ followers }}
+            <br> Followers</div>
+        <div id="posts-div">{{ posts.count }} <br> Posts</div>
+    </div>
 
     <div class="posts-view">
     </div>

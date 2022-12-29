@@ -2,6 +2,26 @@
     margin: 5px;
 }
 
+#user {
+    font-weight: bold;
+}
+
+#profile-div {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 40px;
+}
+
+#follower-div, #posts-div {
+    flex: 0 0 50%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
 .post-view {
     padding: 20px;
     margin: 5px;
@@ -59,14 +79,16 @@
     border: solid 1px rgba(0, 0, 0, 0.231);
 }
 
-.prev:hover {
+.prev:hover, .next:hover {
     background-color: #d3d3d3;
 }
 
-.next:hover {
-    background-color: #d3d3d3;
+.btn-follow {
+    color: white;
+    background-color: #007bff;
+    font-size: 25px;
+    margin-left: 10px;
+
 }
 
-#user {
-    font-weight: bold;
-}
+

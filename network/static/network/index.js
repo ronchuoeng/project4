@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelector("#post-form")) {
         document.querySelector("#post-form").addEventListener("submit", post);
     }
+    // Follow/Unfollow button
+    if (document.querySelector(".btn-follow")) {
+        document
+            .querySelector(".btn-follow")
+            .addEventListener("click", function () {
+                follow();
+            });
+    }
+
     //  Load individual user's posts on profile page
     if (document.querySelector("#user")) {
         load(`${document.querySelector("#user").innerHTML}`);
@@ -143,6 +152,31 @@ function post() {
                 load();
             } else {
                 window.location.replace("login");
+            }
+        });
+}
+
+function follow() {
+    const username = document.querySelector(".btn-follow").value;
+
+    fetch(`/profile/${username}/follow`, {
+        method: "POST",
+    })
+        .then((response) => response.json())
+        .then((result) => {
+            console.log(result.message);
+            console.log(result.followers);
+            document.querySelector("#follower-div").innerHTML =
+                result.followers.length + "<br> Followers";
+            btnF = document.querySelector(".btn-follow");
+            if (btnF.style.backgroundColor == "rgb(211, 211, 211)") {
+                btnF.innerHTML = "Follow";
+                btnF.style.backgroundColor = "#007bff";
+                btnF.style.color = "white";
+            } else {
+                btnF.innerHTML = "Following";
+                btnF.style.backgroundColor = "#D3D3D3";
+                btnF.style.color = "black";
             }
         });
 }

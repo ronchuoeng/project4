@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import User, Post
+from .models import User, Post, Follower
 
 
 def index(request):
@@ -110,10 +110,73 @@ def addpost(request):
 @login_required
 def profile(request, username):
     try:
-        user = User.objects.get(username=f"{username}")
+        user = User.objects.get(username=username)
     except ObjectDoesNotExist:
         return HttpResponse("The user doesn't exist or has already expired.")
+
     posts = Post.objects.filter(user=user)
     posts = posts.order_by("-timestamp").all()
+    # If user's follower table exists
+    try:
+        Follower.objects.get(user=user)
+        user_f = Follower.objects.get(user=user)
+        user1 = User.objects.get(username=request.user.username)
 
-    return render(request, "network/profile.html", {"user": user, "posts": posts})
+        return render(
+            request,
+            "network/profile.html",
+            {
+                "user": user,
+                "posts": posts,
+                "tableF": user_f.follower.all(),
+                "followers": user_f.follower.count(),
+                "user1": user1,
+            },
+        )
+    # If not, means 0 follower.
+    except Follower.DoesNotExist:
+        return render(
+            request,
+            "network/profile.html",
+            {"user": user, "followers": 0, "posts": posts},
+        )
+
+
+@csrf_exempt
+def follow(request, username):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    user = User.objects.get(username=username)
+    user1 = User.objects.get(username=request.user.username)
+    # 1. Check the user has a follower table or not, if had
+    if Follower.objects.filter(user=user).exists():
+        user_f = Follower.objects.get(user=user)
+        # The function to follow or unfollow by request user
+        if user1 in user_f.follower.all():
+            user_f.follower.remove(user1)
+            follower_list = list(user_f.follower.all().values("id", "username"))
+            return JsonResponse(
+                {
+                    "message": "Unfollowed successfully.",
+                    "followers": follower_list,
+                },
+                status=201,
+            )
+        else:
+            user_f.follower.add(user1)
+            follower_list = list(user_f.follower.all().values("id", "username"))
+            return JsonResponse(
+                {"message": "Followed successfully.", "followers": follower_list},
+                status=201,
+            )
+
+    # 2. If no, Create a follower table for this user, and add request.user inside
+    else:
+        new_user_f = Follower.objects.create(user=user)
+        new_user_f.follower.add(user1)
+        follower_list = list(new_user_f.follower.all().values("id", "username"))
+
+    return JsonResponse(
+        {"message": "Followed successfully.", "followers": follower_list},
+        status=201,
+    )
