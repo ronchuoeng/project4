@@ -12,11 +12,15 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    //  Load individual user's posts on profile page
+    // Load the page by different situation
     if (document.querySelector("#user")) {
+        //  Profile Page
         load(`${document.querySelector("#user").innerHTML}`);
+    } else if (document.querySelector("#following")) {
+        // Following Page
+        load("following");
     } else {
-        // Default Route
+        // Default Page
         load("all");
     }
 });
@@ -63,7 +67,7 @@ function load(user) {
                     userTag.href = `/profile/${contents.user}`;
 
                     // Add the contents inside Child Div
-                    postUser.innerHTML = contents.user;
+                    userTag.innerHTML = contents.user;
                     postBody.innerHTML = contents.body;
                     postTime.innerHTML = contents.timestamp;
                     if (contents.likelist < 2) {
@@ -76,8 +80,8 @@ function load(user) {
                     postLikeTag.innerHTML =
                         "<img src='/static/network/LikeThumb.png' style='width:20%;height:50%;'> Like";
                     likeTag.appendChild(postLikeTag);
-                    userTag.appendChild(postUser);
-                    post.appendChild(userTag);
+                    postUser.appendChild(userTag);
+                    post.appendChild(postUser);
                     post.appendChild(postBody);
                     post.appendChild(postTime);
                     post.appendChild(postLikeCount);

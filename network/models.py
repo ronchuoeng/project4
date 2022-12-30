@@ -30,7 +30,7 @@ class Post(models.Model):
 class Follower(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followed")
     follower = models.ManyToManyField(
-        User, blank=True, null=True, related_name="followers"
+        User, blank=True, null=True, related_name="following"
     )
 
     def __str__(self):

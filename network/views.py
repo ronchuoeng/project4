@@ -13,7 +13,7 @@ from .models import User, Post, Follower
 
 
 def index(request):
-    return render(request, "network/index.html", {"profile": User.objects.all()})
+    return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -74,6 +74,13 @@ def posts(request, username):
 
     if username == "all":
         post_list = Post.objects.all()
+
+    elif username == "following":
+        user = User.objects.get(username=request.user.username)
+        followings = user.following.all()
+        followings = [following.user for following in followings]
+        post_list = Post.objects.filter(user__in=followings)
+
     else:
         user = User.objects.get(username=username)
         post_list = Post.objects.filter(user=user)
@@ -140,6 +147,11 @@ def profile(request, username):
             "network/profile.html",
             {"user": user, "followers": 0, "posts": posts},
         )
+
+
+@login_required
+def following(request):
+    return render(request, "network/following.html")
 
 
 @csrf_exempt
