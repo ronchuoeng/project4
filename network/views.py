@@ -192,3 +192,25 @@ def follow(request, username):
         {"message": "Followed successfully.", "followers": follower_list},
         status=201,
     )
+
+
+@csrf_exempt
+def edit(request, post_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "You must be login."}, status=400)
+
+    # Edit post must be via PUT
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    data = json.loads(request.body)
+    if data.get("body") is not None:
+        post.body = data["body"]
+        post.save()
+    return HttpResponse(status=204)

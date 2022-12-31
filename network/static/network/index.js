@@ -87,6 +87,53 @@ function load(user) {
                     post.appendChild(postLikeCount);
                     post.appendChild(likeTag);
 
+                    // Edit Button
+                    const btnE = document.createElement("button");
+                    btnE.className = "btn btn-edit";
+                    btnE.innerHTML = "Edit";
+                    // Required author to edit
+                    if (
+                        userTag.innerHTML ==
+                        document.querySelector("#request-user").innerHTML
+                    ) {
+                        postUser.appendChild(btnE);
+                    }
+                    btnE.onclick = function () {
+                        // Hide post
+                        btnE.style.display = "none";
+                        postBody.style.display = "none";
+                        postTime.style.display = "none";
+                        postLikeCount.style.display = "none";
+                        likeTag.style.display = "none";
+
+                        // Create a textarea to user for edit
+                        const textarea = document.createElement("textarea");
+                        textarea.defaultValue = postBody.innerHTML;
+                        textarea.className = "edit-post";
+                        post.append(textarea);
+                        const btnS = document.createElement("button");
+                        btnS.textContent = "Save";
+                        btnS.className = "btn btn-save";
+                        post.append(btnS);
+
+                        // Save
+                        btnS.addEventListener("click", () => {
+                            // Function to update the post
+                            edit(contents.id);
+                            // Update the innerHTML without reload page
+                            postBody.innerHTML = textarea.value;
+                            // Remove edit element
+                            textarea.remove();
+                            btnS.remove();
+                            // Show post
+                            btnE.style.display = "flex";
+                            postBody.style.display = "block";
+                            postTime.style.display = "block";
+                            postLikeCount.style.display = "block";
+                            likeTag.style.display = "block";
+                        });
+                    };
+
                     // Add post to DOM
                     document.querySelector(".posts-view").append(post);
                 });
@@ -183,4 +230,15 @@ function follow() {
                 btnF.style.color = "black";
             }
         });
+}
+
+function edit(post_id) {
+    const body = document.querySelector(".edit-post").value;
+    fetch(`/edit/${post_id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+            body: body,
+        }),
+    });
+    console.log("Post edited successfully.");
 }
