@@ -48,13 +48,21 @@
     color: #808080;
 }
 
-.post-liketag {
-    width: 80px;
+.post-liketag, a.liketag {
+    width: 160px;
     height: 40px;
     font-size: 15px;
+    display:flex;
+    align-items: center;
     text-align: center;
-
+    justify-content: center;
 }
+
+a.liketag:hover {
+    cursor: pointer;
+    background-color: #F5F6F7;
+}
+
 
 .pagination {
    margin: 20px;

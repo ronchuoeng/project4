@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
@@ -99,7 +99,7 @@ def posts(request, username):
 @csrf_exempt
 def addpost(request):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "You must be login."}, status=400)
+        return JsonResponse({"error": "You must be logged in."}, status=400)
     # New post must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -114,7 +114,6 @@ def addpost(request):
     return JsonResponse({"message": "Post added successfully."}, status=201)
 
 
-@login_required
 def profile(request, username):
     try:
         user = User.objects.get(username=username)
@@ -127,8 +126,10 @@ def profile(request, username):
     try:
         Follower.objects.get(user=user)
         user_f = Follower.objects.get(user=user)
-        user1 = User.objects.get(username=request.user.username)
-
+        try:
+            user1 = User.objects.get(username=request.user.username)
+        except User.DoesNotExist:
+            user1 = None
         return render(
             request,
             "network/profile.html",
@@ -197,7 +198,7 @@ def follow(request, username):
 @csrf_exempt
 def edit(request, post_id):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "You must be login."}, status=400)
+        return JsonResponse({"error": "You must be logged in."}, status=400)
 
     # Edit post must be via PUT
     if request.method != "PUT":
@@ -213,4 +214,27 @@ def edit(request, post_id):
     if data.get("body") is not None:
         post.body = data["body"]
         post.save()
+    return HttpResponse(status=204)
+
+
+@csrf_exempt
+def like_post(request, post_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "You are not logged in."})
+    # Like post must be via PUT
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    liker = User.objects.get(username=request.user.username)
+    if liker not in post.likelist.all():
+        post.likelist.add(liker)
+    else:
+        post.likelist.remove(liker)
+
     return HttpResponse(status=204)

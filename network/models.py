@@ -23,7 +23,7 @@ class Post(models.Model):
             "user": self.user.username,
             "body": self.body,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            "likelist": self.likelist.count(),
+            "likelist": [user.username for user in self.likelist.all()],
         }
 
 
